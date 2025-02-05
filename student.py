@@ -233,7 +233,7 @@ class Student:
         take_photo_btn.grid(row=0,column=4,padx=5,pady=10,sticky=W)
 
         #update photo button
-        update_photo_btn=Button(btn_frame,text="Update Pic",width=9,font=("verdana",12,"bold"),fg="white",bg="navyblue")
+        update_photo_btn=Button(btn_frame,command=self.update_photo,text="Update Pic",width=9,font=("verdana",12,"bold"),fg="white",bg="navyblue")
         update_photo_btn.grid(row=0,column=5,padx=5,pady=10,sticky=W)
 
 
@@ -572,6 +572,62 @@ class Student:
             except Exception as es:
                 messagebox.showerror("Error",f"Due to: {str(es)}",parent=self.root) 
 
+    # Add new method for updating photos
+    def update_photo(self):
+        if self.var_std_id.get()=="":
+            messagebox.showerror("Error","Student Id Must be Required!",parent=self.root)
+        else:
+            try:
+                Update=messagebox.askyesno("Update","Do you want to update this student's photo samples?",parent=self.root)
+                if Update > 0:
+                    # Delete existing photos
+                    import os
+                    path = "data_img"
+                    for file in os.listdir(path):
+                        if file.startswith(f"student.{self.var_std_id.get()}."):
+                            os.remove(os.path.join(path, file))
+                    
+                    # Take new photos
+                    face_classifier = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+
+                    def face_croped(img):
+                        gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+                        faces = face_classifier.detectMultiScale(gray,1.3,5)
+                        for (x,y,w,h) in faces:
+                            face_croped=img[y:y+h,x:x+w]
+                            return face_croped
+                    
+                    cap=cv2.VideoCapture(0)
+                    img_id=0
+                    
+                    while True:
+                        ret,my_frame=cap.read()
+                        if face_croped(my_frame) is not None:
+                            img_id+=1
+                            face=cv2.resize(face_croped(my_frame),(200,200))
+                            face=cv2.cvtColor(face,cv2.COLOR_BGR2GRAY)
+                            file_path=f"data_img/student.{self.var_std_id.get()}.{img_id}.jpg"
+                            cv2.imwrite(file_path,face)
+                            cv2.putText(face,str(img_id),(50,50),cv2.FONT_HERSHEY_COMPLEX,2,(0,255,0),2)        
+                            cv2.imshow("Cropped Face",face)
+
+                        if cv2.waitKey(1)==13 or int(img_id)==100:
+                            break
+                            
+                    cap.release()
+                    cv2.destroyAllWindows()
+                    
+                    # Update database
+                    conn = mysql.connector.connect(username='root', password='ayaan786',host='localhost',database='face_recognition',port=3306)
+                    mycursor = conn.cursor()
+                    mycursor.execute("update student set PhotoSample='Yes' where Student_ID=%s",(self.var_std_id.get(),))
+                    conn.commit()
+                    conn.close()
+                    
+                    messagebox.showinfo("Success","Photo samples updated successfully!\nPlease train the system with new photos.",parent=self.root)
+                
+            except Exception as es:
+                messagebox.showerror("Error",f"Due to: {str(es)}",parent=self.root)
 
 # main class object
 

@@ -13,6 +13,9 @@ from time import strftime
 from datetime import datetime
 import csv
 from tkinter import filedialog
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 #Global variable for importCsv Function 
 mydata=[]
@@ -231,9 +234,12 @@ class Attendance:
     #Update button
         del_btn=Button(right_frame,command=self.update_data,text="Update",width=12,font=("verdana",12,"bold"),fg="white",bg="navyblue")
         del_btn.grid(row=0,column=1,padx=6,pady=10,sticky=W)
-    #Update button
+    #Delete button
         del_btn=Button(right_frame,command=self.delete_data,text="Delete",width=12,font=("verdana",12,"bold"),fg="white",bg="navyblue")
         del_btn.grid(row=0,column=2,padx=6,pady=10,sticky=W)
+    #Send Email button
+        email_btn=Button(right_frame,command=self.send_email,text="Send Email",width=12,font=("verdana",12,"bold"),fg="white",bg="navyblue")
+        email_btn.grid(row=0,column=3,padx=6,pady=10,sticky=W)
     # ===============================update function for mysql database=================
     def update_data(self):
         if self.var_id.get()=="" or self.var_roll.get=="" or self.var_name.get()=="" or self.var_time.get()=="" or self.var_date.get()=="" or self.var_attend.get()=="Status":
@@ -411,6 +417,78 @@ class Attendance:
                 messagebox.showinfo("Success","All Records are Saved in Database!",parent=self.root)
             except Exception as es:
                 messagebox.showerror("Error",f"Due to: {str(es)}",parent=self.root)
+
+    def send_email(self):
+        try:
+            # Check the imported attendance data (mydata)
+            absent_students = []
+            for student in mydata:
+                if len(student) >= 6 and student[5].strip() == "Absent":
+                    absent_students.append(student)
+            
+            if not absent_students:
+                messagebox.showinfo("Info", "No absent students found in the imported data.", parent=self.root)
+                return
+
+            # Read parents' data
+            parents_data = {}
+            try:
+                with open('parents.csv', 'r') as parents_file:
+                    csv_reader = csv.reader(parents_file)
+                    for row in csv_reader:
+                        if len(row) >= 4:
+                            roll_no = row[1].strip()
+                            email = row[3].strip()
+                            parents_data[roll_no] = email
+            except FileNotFoundError:
+                messagebox.showerror("Error", "parents.csv file not found!", parent=self.root)
+                return
+
+            # Email configuration
+            sender_email = "testproject615@gmail.com"  # Your email
+            sender_password = "kklf ucdy xwlc amzh"  # Your app password
+
+            # Send emails for each absent student
+            emails_sent = 0
+            for student in absent_students:
+                roll_no = student[1].strip()
+                if roll_no in parents_data:
+                    parent_email = parents_data[roll_no]
+                    
+                    # Create message
+                    message = MIMEMultipart()
+                    message["From"] = sender_email
+                    message["To"] = parent_email
+                    message["Subject"] = "Student Attendance Alert"
+
+                    # Email body
+                    body = f"""Dear Parent,
+
+This is to inform you that your ward {student[2]} (Roll No: {roll_no}) 
+was marked absent on {student[4]} at {student[3]}.
+
+Please take note of this absence.
+
+Regards,
+College Administration"""
+
+                    message.attach(MIMEText(body, "plain"))
+
+                    # Send email
+                    with smtplib.SMTP("smtp.gmail.com", 587) as server:
+                        server.starttls()
+                        server.login(sender_email, sender_password)
+                        text = message.as_string()
+                        server.sendmail(sender_email, parent_email, text)
+                        emails_sent += 1
+
+            if emails_sent > 0:
+                messagebox.showinfo("Success", f"Sent absence notifications to {emails_sent} parent(s)!", parent=self.root)
+            else:
+                messagebox.showinfo("Info", "No matching parent emails found for absent students.", parent=self.root)
+
+        except Exception as es:
+            messagebox.showerror("Error", f"Due to: {str(es)}", parent=self.root)
 
 
 

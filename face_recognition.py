@@ -17,6 +17,9 @@ class Face_Recognition:
         self.root = root
         self.root.geometry("1366x768+0+0")
         self.root.title("Face Recognition Panel")
+        
+        # Add a set to track present students
+        self.present_students = set()
 
         # Setting the header image
         img = Image.open(
@@ -64,6 +67,41 @@ class Face_Recognition:
                 d1 = now.strftime("%d/%m/%Y")
                 dtString = now.strftime("%H:%M:%S")
                 f.writelines(f"\n{i}, {r}, {n}, {dtString}, {d1}, Present")
+                # Add to present students set
+                self.present_students.add(i)
+
+    def mark_absent_students(self):
+        try:
+            # Connect to database
+            conn = mysql.connector.connect(
+                username='root',
+                password='ayaan786',
+                host='localhost',
+                database='face_recognition',
+                port=3306
+            )
+            cursor = conn.cursor()
+
+            # Get all students
+            cursor.execute("SELECT Student_ID, Roll_No, Name FROM student")
+            all_students = cursor.fetchall()
+
+            now = datetime.now()
+            d1 = now.strftime("%d/%m/%Y")
+            dtString = now.strftime("%H:%M:%S")
+
+            # Open attendance file in append mode
+            with open("attendance.csv", "a", newline="\n") as f:
+                # For each student not in present_students, mark as absent
+                for student in all_students:
+                    student_id = student[0]
+                    if student_id not in self.present_students:
+                        f.writelines(f"\n{student[0]}, {student[1]}, {student[2]}, {dtString}, {d1}, Absent")
+
+            conn.close()
+            messagebox.showinfo("Success", "Attendance marked successfully! Absent students have been recorded.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Error marking absent students: {str(e)}")
 
     # ====================Face Recognition==================
 
@@ -138,8 +176,14 @@ class Face_Recognition:
         clf = cv2.face.LBPHFaceRecognizer_create()
         clf.read("clf.xml")
 
+        # Clear present students set at start of new session
+        self.present_students.clear()
+
         # Start video capture
         videoCap = cv2.VideoCapture(0)
+
+        # Add text to show instructions
+        instruction_shown = False
 
         while True:
             ret, img = videoCap.read()
@@ -148,6 +192,13 @@ class Face_Recognition:
                 break
 
             img = recognize(img, clf, faceCascade)
+            
+            # Add instruction text
+            if not instruction_shown:
+                cv2.putText(img, "Press 'Enter' to finish and mark absent students", 
+                           (10, 30), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
+                instruction_shown = True
+
             cv2.imshow("Face Detector", img)
 
             # Exit conditions
@@ -158,6 +209,9 @@ class Face_Recognition:
 
         videoCap.release()
         cv2.destroyAllWindows()
+
+        # After closing camera, mark absent students
+        self.mark_absent_students()
 
 
 if __name__ == "__main__":

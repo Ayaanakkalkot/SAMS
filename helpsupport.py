@@ -95,12 +95,12 @@ class Helpsupport:
     
     def youtube(self):
         self.new = 1
-        self.url = "https://www.youtube.com/channel/UCwpFCX_Z4SVkAT_6hPeUnsA"
+        self.url = "https://www.youtube.com/"
         webbrowser.open(self.url,new=self.new)
     
     def gmail(self):
         self.new = 1
-        self.url = "https://www.gmail.com"
+        self.url = "https://mail.google.com/"
         webbrowser.open(self.url,new=self.new)
 
 
