@@ -26,55 +26,50 @@ class Login:
         self.var_sa=StringVar()
         self.var_pwd=StringVar()
 
-        self.bg=ImageTk.PhotoImage(file=r"C:\Users\Ayaan Akkalkot\Python-FYP-Face-Recognition-Attendence-System\Images_GUI\loginBg1.jpg")
+        # Create gradient background
+        self.bg=ImageTk.PhotoImage(Image.open("Images_GUI/login_bg.png"))
         
         lb1_bg=Label(self.root,image=self.bg)
         lb1_bg.place(x=0,y=0, relwidth=1,relheight=1)
 
-        frame1= Frame(self.root,bg="#002B53")
-        frame1.place(x=560,y=170,width=340,height=450)
+        # Login Frame
+        frame1= Frame(self.root,bg="#1A1A1A")
+        frame1.place(x=480,y=170,width=400,height=450)
 
-        img1=Image.open(r"C:\Users\Ayaan Akkalkot\Python-FYP-Face-Recognition-Attendence-System\Images_GUI\log1.png")
-        img1=img1.resize((100,100),Image.Resampling.LANCZOS)
-        self.photoimage1=ImageTk.PhotoImage(img1)
-        lb1img1 = Label(image=self.photoimage1,bg="#002B53")
-        lb1img1.place(x=690,y=175, width=100,height=100)
+        # Title
+        title = Label(frame1,text="Login",font=("Segoe UI",30,"bold"),fg="white",bg="#1A1A1A")
+        title.place(x=150,y=30)
 
-        get_str = Label(frame1,text="Login",font=("times new roman",20,"bold"),fg="white",bg="#002B53")
-        get_str.place(x=140,y=100)
+        # Username
+        username_label = Label(frame1,text="Username",font=("Segoe UI",15),fg="#CCCCCC",bg="#1A1A1A")
+        username_label.place(x=50,y=120)
+        
+        self.txtuser=ttk.Entry(frame1,font=("Segoe UI",15))
+        self.txtuser.place(x=50,y=150,width=300)
 
-        #label1 
-        username =lb1= Label(frame1,text="Username:",font=("times new roman",15,"bold"),fg="white",bg="#002B53")
-        username.place(x=30,y=160)
+        # Password
+        pwd_label = Label(frame1,text="Password",font=("Segoe UI",15),fg="#CCCCCC",bg="#1A1A1A")
+        pwd_label.place(x=50,y=200)
+        
+        self.txtpwd=ttk.Entry(frame1,font=("Segoe UI",15),show="*")
+        self.txtpwd.place(x=50,y=230,width=300)
 
-        #entry1 
-        self.txtuser=ttk.Entry(frame1,font=("times new roman",15,"bold"))
-        self.txtuser.place(x=33,y=190,width=270)
+        # Login Button
+        loginbtn=Button(frame1,command=self.login,text="Login",font=("Segoe UI",15,"bold"),
+                       bd=0,relief=RIDGE,fg="white",bg="#007ACC",activeforeground="white",
+                       activebackground="#005C99",cursor="hand2")
+        loginbtn.place(x=50,y=300,width=300,height=45)
 
+        # Register & Forget Password
+        register_btn=Button(frame1,command=self.reg,text="New User? Register",
+                          font=("Segoe UI",10),bd=0,relief=RIDGE,fg="#007ACC",
+                          bg="#1A1A1A",activeforeground="#007ACC",activebackground="#1A1A1A")
+        register_btn.place(x=50,y=370)
 
-        #label2 
-        pwd =lb1= Label(frame1,text="Password:",font=("times new roman",15,"bold"),fg="white",bg="#002B53")
-        pwd.place(x=30,y=230)
-
-        #entry2 
-        self.txtpwd=ttk.Entry(frame1,font=("times new roman",15,"bold"))
-        self.txtpwd.place(x=33,y=260,width=270)
-
-
-        # Creating Button Login
-        loginbtn=Button(frame1,command=self.login,text="Login",font=("times new roman",15,"bold"),bd=0,relief=RIDGE,fg="#002B53",bg="white",activeforeground="white",activebackground="#007ACC")
-        loginbtn.place(x=33,y=320,width=270,height=35)
-
-
-        # Creating Button Registration
-        loginbtn=Button(frame1,command=self.reg,text="Register",font=("times new roman",10,"bold"),bd=0,relief=RIDGE,fg="white",bg="#002B53",activeforeground="orange",activebackground="#002B53")
-        loginbtn.place(x=33,y=370,width=50,height=20)
-
-
-        # Creating Button Forget
-        loginbtn=Button(frame1,command=self.forget_pwd,text="Forget",font=("times new roman",10,"bold"),bd=0,relief=RIDGE,fg="white",bg="#002B53",activeforeground="orange",activebackground="#002B53")
-        loginbtn.place(x=90,y=370,width=50,height=20)
-
+        forgotbtn=Button(frame1,command=self.forget_pwd,text="Forgot Password?",
+                        font=("Segoe UI",10),bd=0,relief=RIDGE,fg="#007ACC",
+                        bg="#1A1A1A",activeforeground="#007ACC",activebackground="#1A1A1A")
+        forgotbtn.place(x=250,y=370)
 
     #  THis function is for open register window
     def reg(self):
