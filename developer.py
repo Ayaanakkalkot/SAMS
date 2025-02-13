@@ -12,80 +12,50 @@ class Developer:
     def __init__(self,root):
         self.root=root
         self.root.geometry("1366x768+0+0")
-        self.root.title("Face_Recogonition_System")
+        self.root.title("Developer")
 
-# This part is image labels setting start 
-        # first header image  
-        img=Image.open(r"C:\Users\Ayaan Akkalkot\Python-FYP-Face-Recognition-Attendence-System\Images_GUI\banner.jpg")
-        img=img.resize((1366,130),Image.Resampling.LANCZOS)
-        self.photoimg=ImageTk.PhotoImage(img)
+        # Background
+        self.bg=ImageTk.PhotoImage(Image.open("Images_GUI/dashboard_bg.png"))
+        bg_lbl=Label(self.root,image=self.bg)
+        bg_lbl.place(x=0,y=0,relwidth=1,relheight=1)
 
-        # set image as lable
-        f_lb1 = Label(self.root,image=self.photoimg)
-        f_lb1.place(x=0,y=0,width=1366,height=130)
+        # Title
+        title = Label(self.root,text="Developer",
+                     font=("Segoe UI",35,"bold"),fg="white",bg="#1A1A1A")
+        title.place(x=0,y=0,relwidth=1,height=70)
 
-        # backgorund image 
-        bg1=Image.open(r"C:\Users\Ayaan Akkalkot\Python-FYP-Face-Recognition-Attendence-System\Images_GUI\bg4.png")
-        bg1=bg1.resize((1366,768),Image.Resampling.LANCZOS)
-        self.photobg1=ImageTk.PhotoImage(bg1)
+        # Main Frame
+        main_frame = Frame(self.root,bg="#1A1A1A")
+        main_frame.place(x=0,y=70,relwidth=1,relheight=1)
 
-        # set image as lable
-        bg_img = Label(self.root,image=self.photobg1)
-        bg_img.place(x=0,y=130,width=1366,height=768)
+        # Developer Card
+        dev_card = Frame(main_frame,bg="#2D2D2D")
+        dev_card.place(x=483,y=100,width=400,height=500)
 
+        # Developer Image
+        try:
+            img = Image.open("Images_GUI/ayaan.png")
+        except:
+            # Create a default avatar if image doesn't exist
+            img = Image.new('RGB', (200, 200), '#2D2D2D')
+        img = img.resize((200,200),Image.Resampling.LANCZOS)
+        self.photoimg = ImageTk.PhotoImage(img)
+        
+        img_lbl = Label(dev_card,image=self.photoimg,bg="#2D2D2D")
+        img_lbl.place(x=100,y=30,width=200,height=200)
 
-        #title section
-        title_lb1 = Label(bg_img,text="Developer Pannel",font=("verdana",30,"bold"),bg="white",fg="navyblue")
-        title_lb1.place(x=0,y=0,width=1366,height=45)
+        # Developer Info
+        name_lbl = Label(dev_card,text="Ayaan Akkalkot",
+                        font=("Segoe UI",20,"bold"),fg="white",bg="#2D2D2D")
+        name_lbl.place(x=0,y=250,relwidth=1)
 
-        # Create buttons below the section 
-        # ------------------------------------------------------------------------------------------------------------------- 
-        # student button 1
-        std_img_btn=Image.open(r"C:\Users\Ayaan Akkalkot\Python-FYP-Face-Recognition-Attendence-System\Images_GUI\ayaan.png")
-        std_img_btn=std_img_btn.resize((180,180),Image.Resampling.LANCZOS)
-        self.std_img1=ImageTk.PhotoImage(std_img_btn)
+        role_lbl = Label(dev_card,text="Lead Developer",
+                        font=("Segoe UI",15),fg="#CCCCCC",bg="#2D2D2D")
+        role_lbl.place(x=0,y=290,relwidth=1)
 
-        std_b1 = Button(bg_img,image=self.std_img1,cursor="hand2")
-        std_b1.place(x=250,y=200,width=180,height=180)
-
-        std_b1_1 = Button(bg_img,text="Ayaan A",cursor="hand2",font=("tahoma",15,"bold"),bg="white",fg="navyblue")
-        std_b1_1.place(x=250,y=380,width=180,height=45)
-
-        # Detect Face  button 2
-        det_img_btn=Image.open(r"C:\Users\Ayaan Akkalkot\Python-FYP-Face-Recognition-Attendence-System\Images_GUI\vaishe.png")
-        det_img_btn=det_img_btn.resize((180,180),Image.Resampling.LANCZOS)
-        self.det_img1=ImageTk.PhotoImage(det_img_btn)
-
-        det_b1 = Button(bg_img,image=self.det_img1,cursor="hand2",)
-        det_b1.place(x=480,y=200,width=180,height=180)
-
-        det_b1_1 = Button(bg_img,text="Vaishnavi M",cursor="hand2",font=("tahoma",15,"bold"),bg="white",fg="navyblue")
-        det_b1_1.place(x=480,y=380,width=180,height=45)
-
-         # Attendance System  button 3
-        att_img_btn=Image.open(r"C:\Users\Ayaan Akkalkot\Python-FYP-Face-Recognition-Attendence-System\Images_GUI\shi.png")
-        att_img_btn=att_img_btn.resize((180,180),Image.Resampling.LANCZOS)
-        self.att_img1=ImageTk.PhotoImage(att_img_btn)
-
-        att_b1 = Button(bg_img,image=self.att_img1,cursor="hand2",)
-        att_b1.place(x=710,y=200,width=180,height=180)
-
-        att_b1_1 = Button(bg_img,text="Shivani S",cursor="hand2",font=("tahoma",15,"bold"),bg="white",fg="navyblue")
-        att_b1_1.place(x=710,y=380,width=180,height=45)
-
-         # Help  Support  button 4
-        hlp_img_btn=Image.open(r"C:\Users\Ayaan Akkalkot\Python-FYP-Face-Recognition-Attendence-System\Images_GUI\vinu.png")
-        hlp_img_btn=hlp_img_btn.resize((180,180),Image.Resampling.LANCZOS)
-        self.hlp_img1=ImageTk.PhotoImage(hlp_img_btn)
-
-        hlp_b1 = Button(bg_img,image=self.hlp_img1,cursor="hand2",)
-        hlp_b1.place(x=940,y=200,width=180,height=180)
-
-        hlp_b1_1 = Button(bg_img,text="Vinutha N",cursor="hand2",font=("tahoma",15,"bold"),bg="white",fg="navyblue")
-        hlp_b1_1.place(x=940,y=380,width=180,height=45)
-
-
-
+        desc_lbl = Label(dev_card,text="Computer Science Student\nSpecialized in AI & Machine Learning",
+                        font=("Segoe UI",12),fg="#CCCCCC",bg="#2D2D2D",justify=CENTER)
+        desc_lbl.place(x=0,y=330,relwidth=1)
 
 if __name__ == "__main__":
     root=Tk()
